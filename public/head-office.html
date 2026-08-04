@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vajra - Head Office Review</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="logo"><span>VAJRA</span> Head Office</div>
+    <div class="sfhawk-badge">
+      <img src="/sfHawk_Logo.png" alt="SF HAWK" style="height:32px;width:auto;">
+    </div>
+    <div class="header-right">
+      <span class="user-info">Logged in as: <strong id="userNameDisplay"></strong></span>
+      <button class="btn btn-back" id="usersBtn" onclick="showUserManagement()" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:white;padding:6px 14px;border-radius:4px;cursor:pointer;font-size:0.82rem;">?? Users</button>
+      <button class="btn btn-back" id="refreshBtn" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:6px 14px;border-radius:4px;cursor:pointer;font-size:0.85rem;">&#8635; Refresh</button>
+      <button class="btn-logout" id="logoutBtn">Logout</button>
+    </div>
+  </header>
+
+  <div class="main-content">
+    <div id="mainContent">
+      <div class="loading"><div class="spinner"></div><p>Loading...</p></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="/js/head-office.js"></script>
+</body>
+</html>

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vajra - Technician Form</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="logo"><span>VAJRA</span> Testing Job Card</div>
+    <div class="sfhawk-badge">
+      <img src="/sfHawk_Logo.png" alt="SF HAWK" style="height:32px;width:auto;">
+    </div>
+    <div class="header-right">
+      <button class="btn-nav" id="myFormsBtn" style="background:transparent;border:none;color:#ccc;padding:6px 14px;border-radius:4px;cursor:pointer;font-size:0.82rem;margin-right:10px;transition:all 0.2s;" onmouseenter="this.style.background='rgba(255,255,255,0.05)';this.style.color='#fff';" onmouseleave="this.style.background='transparent';this.style.color='#ccc';">📋 My Forms</button>
+      <span class="user-info">Technician: <strong id="userNameDisplay"></strong></span>
+      <button class="btn-logout" id="logoutBtn">Logout</button>
+    </div>
+  </header>
+
+  <div class="main-content">
+    <!-- My Forms Dashboard (initially hidden) -->
+    <div id="myFormsDashboard" style="display:none;">
+      <div class="forms-list-header">
+        <h2 style="color:#e0e0e0;">My Forms</h2>
+        <button class="btn" style="background:#27ae60;color:#fff;padding:8px 16px;border-radius:6px;font-size:0.85rem;font-weight:600;border:none;cursor:pointer;" id="newFormBtnDash">+ New Form</button>
+      </div>
+      <div id="myFormsContainer"></div>
+    </div>
+
+    <!-- Form Editor (initially visible) -->
+    <div id="formEditor">
+    <div class="progress-bar-container">
+      <div class="progress-label">Form Completion</div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="progress-pct" id="progressPct">0% complete</div>
+    </div>
+
+    <form id="techForm" autocomplete="off">
+
+      <!-- STATUS BANNER (shown for approved/rejected/resubmitted forms) -->
+      <div id="statusBanner" class="status-banner" style="display:none"></div>
+
+      <!-- HEAD OFFICE COMMENTS (shown when form has been reviewed) -->
+      <div class="ho-comments-box" style="display:none">
+        <div class="card-header" style="background:#4a4a6a;border-radius:8px 8px 0 0;">Head Office Comments</div>
+        <div class="card-body" style="background:#f8f8ff;border:1px solid #ddd;border-top:none;border-radius:0 0 8px 8px;">
+          <p id="hoComments" style="line-height:1.6;color:#333;white-space:pre-wrap;"></p>
+        </div>
+      </div>
+
+      <!-- PAGE 1: JOB CARD -->
+      <div class="form-card">
+        <div class="card-header">Page 1 &mdash; Vajra Testing Job Card</div>
+        <div class="card-body">
+          <div class="field-row">
+            <div class="field-group">
+              <label for="vajra_id">Vajra ID *</label>
+              <input type="text" id="vajra_id" name="vajra_id" placeholder="e.g. VJR-2024-001">
+            </div>
+            <div class="field-group">
+              <label for="vajra_base_id">Vajra Base ID</label>
+              <input type="text" id="vajra_base_id" name="vajra_base_id" placeholder="e.g. BASE-001">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPONENT SERIAL IDs -->
+      <!-- TESTING & QA -->
+      <div class="form-card">
+        <div class="card-header section-alt">Testing and QA</div>
+        <div class="card-body">
+          <table class="checklist-table">
+            <thead>
+              <tr>
+                <th style="width:30px">#</th>
+                <th>Test Item</th>
+                <th style="width:40px">Done</th>
+                <th style="width:160px">Pass / Fail</th>
+                <th>Values / Comments</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- 1. Supply & Connectivity -->
+              <tr>
+                <td class="item-num">1</td>
+                <td>Supply &amp; Connectivity Testing</td>
+                <td><input type="checkbox" name="tqa_supply" id="tqa_supply" class="tqa-check"></td>
+                <td><div class="radio-group"><label class="radio-label pass"><input type="radio" name="tqa_supply_result" value="pass"> Pass</label><label class="radio-label fail"><input type="radio" name="tqa_supply_result" value="fail"> Fail</label></div></td>
+                <td>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                    <label class="val-label">VAC:</label>
+                    <input type="text" name="tqa_supply_vac" class="val-input" placeholder="e.g. 230">
+                    <label class="val-label">24.1V:</label>
+                    <input type="text" name="tqa_supply_24v" class="val-input" placeholder="measured">
+                    <label class="val-label">5V:</label>
+                    <input type="text" name="tqa_supply_5v" class="val-input" placeholder="measured">
+                  </div>
+                </td>
+              </tr>
+              <!-- 2. IO Test / Voltage Test -->
+              <tr>
+                <td class="item-num">2</td>
+                <td>IO Test, Voltage Test (With and Without Load)</td>
+                <td><input type="checkbox" name="tqa_io" id="tqa_io" class="tqa-check"></td>
+                <td><div class="radio-group"><label class="radio-label pass"><input type="radio" name="tqa_io_result" value="pass"> Pass</label><label class="radio-label fail"><input type="radio" name="tqa_io_result" value="fail"> Fail</label></div></td>
+                <td>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                    <label class="val-label">With Load:</label>
+                    <input type="text" name="tqa_io_with_load" class="val-input" placeholder="V">
+                    <label class="val-label">Without Load:</label>
+                    <input type="text" name="tqa_io_without_load" class="val-input" placeholder="V">
+                    <input type="text" name="tqa_io_comment" class="comment-input" placeholder="Comments...">
+                  </div>
+                </td>
+              </tr>
+              <!-- 3. RTC -->
+              <tr>
+                <td class="item-num">3</td>
+                <td>RTC Address Detection and RTC Battery (3V)</td>
+                <td><input type="checkbox" name="tqa_rtc" id="tqa_rtc" class="tqa-check"></td>
+                <td><div class="radio-group"><label class="radio-label pass"><input type="radio" name="tqa_rtc_result" value="pass"> Pass</label><label class="radio-label fail"><input type="radio" name="tqa_rtc_result" value="fail"> Fail</label></div></td>
+                <td>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                    <label class="val-label">Battery Voltage:</label>
+                    <input type="text" name="tqa_rtc_voltage" class="val-input" placeholder="e.g. 3.1V">
+                    <label class="val-label">RTC Address:</label>
+                    <input type="text" name="tqa_rtc_address" class="val-input" placeholder="e.g. 0x68">
+                  </div>
+                </td>
+              </tr>
+              <!-- 4. Log Verification -->
+              <tr>
+                <td class="item-num">4</td>
+                <td>Log Verification (Temp &amp; Swap etc.)</td>
+                <td><input type="checkbox" name="tqa_log" id="tqa_log" class="tqa-check"></td>
+                <td><div class="radio-group"><label class="radio-label pass"><input type="radio" name="tqa_log_result" value="pass"> Pass</label><label class="radio-label fail"><input type="radio" name="tqa_log_result" value="fail"> Fail</label></div></td>
+                <td>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                    <label class="val-label">CPU Temp (�C):</label>
+                    <input type="text" name="tqa_log_temp" class="val-input" placeholder="e.g. 52">
+                    <label class="val-label">Swap (MB):</label>
+                    <input type="text" name="tqa_log_swap" class="val-input" placeholder="e.g. 0">
+                    <input type="text" name="tqa_log_comment" class="comment-input" placeholder="Other log notes...">
+                  </div>
+                </td>
+              </tr>
+              <!-- 5. Screen Touch -->
+              <tr>
+                <td class="item-num">5</td>
+                <td>Screen Touch Testing</td>
+                <td><input type="checkbox" name="tqa_touch" id="tqa_touch" class="tqa-check"></td>
+                <td><div class="radio-group"><label class="radio-label pass"><input type="radio" name="tqa_touch_result" value="pass"> Pass</label><label class="radio-label fail"><input type="radio" name="tqa_touch_result" value="fail"> Fail</label></div></td>
+                <td><input type="text" name="tqa_touch_comment" class="comment-input" placeholder="Comments..."></td>
+              </tr>
+              <!-- 6. Power & Network LED -->
+              <tr>
+                <td class="item-num">6</td>
+                <td>Power and Network LED Testing</td>
+                <td><input type="checkbox" name="tqa_led" id="tqa_led" class="tqa-check"></td>
+                <td><div class="radio-group"><label class="radio-label pass"><input type="radio" name="tqa_led_result" value="pass"> Pass</label><label class="radio-label fail"><input type="radio" name="tqa_led_result" value="fail"> Fail</label></div></td>
+                <td><input type="text" name="tqa_led_comment" class="comment-input" placeholder="Comments..."></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VISUAL INSPECTION - COMPONENTS -->
+      <div class="form-card">
+        <div class="card-header section-green">Visual Inspection &mdash; Components</div>
+        <div class="card-body">
+          <p style="font-size:0.83rem;color:#666;margin-bottom:12px;">Check each component and enter its part / serial ID:</p>
+          <table class="checklist-table">
+            <thead>
+              <tr><th style="width:30px">?</th><th>Component</th><th>Part Code</th><th>Serial / Batch ID</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="checkbox" name="vi_smps" class="tqa-check"></td>
+                <td>SMPS</td>
+                <td><span class="part-code">IPFGA007</span></td>
+                <td><input type="text" name="vi_smps_id" class="comment-input" placeholder="Serial No."></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" name="vi_fan" class="tqa-check"></td>
+                <td>Fan</td>
+                <td><span class="part-code">IFPGA004</span></td>
+                <td><input type="text" name="vi_fan_id" class="comment-input" placeholder="Serial No."></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" name="vi_4dio" class="tqa-check"></td>
+                <td>4DIO Board</td>
+                <td><span class="part-code">IPFGA019</span></td>
+                <td><input type="text" name="vi_4dio_id" class="comment-input" placeholder="Serial No."></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" name="vi_network_switch" class="tqa-check"></td>
+                <td>Network Switch</td>
+                <td><span class="part-code">IFPGA006</span></td>
+                <td><input type="text" name="vi_ns_id" class="comment-input" placeholder="Serial No."></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" name="vi_controller" class="tqa-check"></td>
+                <td>Controller + Heat Sink</td>
+                <td><span class="part-code">IFPGA003</span></td>
+                <td><input type="text" name="vi_ctrl_id" class="comment-input" placeholder="Serial No."></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" name="vi_screen" class="tqa-check"></td>
+                <td>10" Screen</td>
+                <td><span class="part-code">IFPGA013 / SFTFT001</span></td>
+                <td><input type="text" name="vi_screen_id" class="comment-input" placeholder="Serial No."></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" name="vi_sdcard" class="tqa-check"></td>
+                <td>SD Card</td>
+                <td><span class="part-code">IFPGA001</span></td>
+                <td><input type="text" name="vi_sdcard_id" class="comment-input" placeholder="Serial No."></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" name="vi_12v_adapter" class="tqa-check"></td>
+                <td>12V Adapter</td>
+                <td><span class="part-code">IPFGA036 / SFPS005</span></td>
+                <td><input type="text" name="vi_12v_id" class="comment-input" placeholder="Serial No."></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" name="vi_pi_adapter" class="tqa-check"></td>
+                <td>Pi Adapter (5V)</td>
+                <td><span class="part-code">IPFGA035</span></td>
+                <td><input type="text" name="vi_pi_adapter_id" class="comment-input" placeholder="Serial No."></td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="margin-top:12px;display:flex;gap:20px;flex-wrap:wrap;">
+            <label class="checkbox-label"><input type="checkbox" name="vi_filter"> Filter</label>
+            <label class="checkbox-label"><input type="checkbox" name="vi_grommets"> Grommets</label>
+            <label class="checkbox-label"><input type="checkbox" name="vi_tb_fuse"> TB Mounting and Fuse</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISUAL INSPECTION - WIRING -->
+      <div class="form-card">
+        <div class="card-header section-green">Visual Inspection &mdash; Wiring</div>
+        <div class="card-body">
+          <div class="checkbox-group">
+            <label class="checkbox-label"><input type="checkbox" name="vi_w_power"> Power Cable</label>
+            <label class="checkbox-label"><input type="checkbox" name="vi_w_tb_smps"> TB to SMPS</label>
+            <label class="checkbox-label"><input type="checkbox" name="vi_w_smps_4dio"> SMPS to 4DIO</label>
+            <label class="checkbox-label"><input type="checkbox" name="vi_w_4dio_led"> 4DIO to LED</label>
+            <label class="checkbox-label"><input type="checkbox" name="vi_w_ns_power"> NS Power Cable</label>
+            <label class="checkbox-label"><input type="checkbox" name="vi_w_ctrl_power"> Controller Power</label>
+            <label class="checkbox-label"><input type="checkbox" name="vi_w_lan"> LAN Cable</label>
+            <label class="checkbox-label"><input type="checkbox" name="vi_w_hdmi"> HDMI Cable</label>
+            <label class="checkbox-label"><input type="checkbox" name="vi_w_usb_touch"> USB Touch Cable</label>
+            <label class="checkbox-label"><input type="checkbox" name="vi_w_screen_pwr"> Screen Power Supply</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISUAL INSPECTION - OTHER -->
+      <div class="form-card">
+        <div class="card-header section-green">Visual Inspection &mdash; Other</div>
+        <div class="card-body">
+          <div class="checkbox-group" style="margin-bottom:14px;">
+            <label class="checkbox-label"><input type="checkbox" name="vi_io_labels"> IO Connectors with Labels</label>
+            <label class="checkbox-label"><input type="checkbox" name="vi_vajra_sticker"> Vajra ID Sticker (Inside &amp; Outside)</label>
+            <label class="checkbox-label"><input type="checkbox" name="vi_brand_sticker"> Brand Stickers, Labeling &amp; Bezel</label>
+            <label class="checkbox-label"><input type="checkbox" name="vi_crack_check"> Crack Check for Enclosure</label>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label for="vi_notes">Additional Notes</label>
+              <input type="text" id="vi_notes" name="vi_notes" placeholder="Any other observations...">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TESTS PERFORMED -->
+      <div class="form-card">
+        <div class="card-header section-orange">Tests Performed</div>
+        <div class="card-body">
+
+          <!-- Burn Test -->
+          <div class="test-row">
+            <div class="test-header">
+              <span class="test-name">Burn Test</span>
+              <div class="radio-group">
+                <label class="radio-label pass"><input type="radio" name="burn_result" value="pass"> Pass</label>
+                <label class="radio-label fail"><input type="radio" name="burn_result" value="fail"> Fail</label>
+              </div>
+            </div>
+            <div class="test-dates">
+              <div class="test-date-group">
+                <label>Start Date &amp; Time</label>
+                <input type="datetime-local" name="burn_start" class="date-input">
+              </div>
+              <div class="test-date-group">
+                <label>End Date &amp; Time</label>
+                <input type="datetime-local" name="burn_end" class="date-input">
+              </div>
+            </div>
+            <div class="test-result">
+              <input type="text" name="burn_text" class="comment-input" style="width:100%;max-width:500px" placeholder="Test result / observations...">
+            </div>
+            <div class="test-attachment" id="attach-burn"></div>
+            <div class="file-upload-row">
+              <label class="upload-label" for="file-burn">&#128206; Attach Burn Test File</label>
+              <input type="file" id="file-burn" data-testkey="burn" class="test-file-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.png,.jpg,.jpeg,.log,.zip">
+              <span class="upload-hint">PDF, Excel, image, log � max 20MB</span>
+            </div>
+          </div>
+
+          <!-- Network Test -->
+          <div class="test-row">
+            <div class="test-header">
+              <span class="test-name">Network Test</span>
+              <div class="radio-group">
+                <label class="radio-label pass"><input type="radio" name="network_result" value="pass"> Pass</label>
+                <label class="radio-label fail"><input type="radio" name="network_result" value="fail"> Fail</label>
+              </div>
+            </div>
+            <div class="test-dates">
+              <div class="test-date-group">
+                <label>Start Date &amp; Time</label>
+                <input type="datetime-local" name="network_start" class="date-input">
+              </div>
+              <div class="test-date-group">
+                <label>End Date &amp; Time</label>
+                <input type="datetime-local" name="network_end" class="date-input">
+              </div>
+            </div>
+            <div class="test-result">
+              <input type="text" name="network_text" class="comment-input" style="width:100%;max-width:500px" placeholder="Test result / observations...">
+            </div>
+            <div class="test-attachment" id="attach-network"></div>
+            <div class="file-upload-row">
+              <label class="upload-label" for="file-network">&#128206; Attach Network Test File</label>
+              <input type="file" id="file-network" data-testkey="network" class="test-file-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.png,.jpg,.jpeg,.log,.zip">
+              <span class="upload-hint">PDF, Excel, image, log � max 20MB</span>
+            </div>
+          </div>
+
+          <!-- Non-Ethernet Test -->
+          <div class="test-row">
+            <div class="test-header">
+              <span class="test-name">Non-Ethernet Test</span>
+              <div class="radio-group">
+                <label class="radio-label pass"><input type="radio" name="noneth_result" value="pass"> Pass</label>
+                <label class="radio-label fail"><input type="radio" name="noneth_result" value="fail"> Fail</label>
+              </div>
+            </div>
+            <div class="test-dates">
+              <div class="test-date-group">
+                <label>Start Date &amp; Time</label>
+                <input type="datetime-local" name="noneth_start" class="date-input">
+              </div>
+              <div class="test-date-group">
+                <label>End Date &amp; Time</label>
+                <input type="datetime-local" name="noneth_end" class="date-input">
+              </div>
+            </div>
+            <div class="test-result">
+              <input type="text" name="noneth_text" class="comment-input" style="width:100%;max-width:500px" placeholder="Test result / observations...">
+            </div>
+            <div class="test-attachment" id="attach-noneth"></div>
+            <div class="file-upload-row">
+              <label class="upload-label" for="file-noneth">&#128206; Attach Non-Ethernet Test File</label>
+              <input type="file" id="file-noneth" data-testkey="noneth" class="test-file-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.png,.jpg,.jpeg,.log,.zip">
+              <span class="upload-hint">PDF, Excel, image, log � max 20MB</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ADDITIONAL INFO -->
+      <div class="form-card">
+        <div class="card-header">Additional Information</div>
+        <div class="card-body">
+          <div class="field-row triple">
+            <div class="field-group">
+              <label for="allotted_to">Allotted To</label>
+              <input type="text" id="allotted_to" name="allotted_to" placeholder="Name / Team">
+            </div>
+            <div class="field-group">
+              <label for="machine_name">Machine Name</label>
+              <input type="text" id="machine_name" name="machine_name" placeholder="Machine name">
+            </div>
+            <div class="field-group">
+              <label for="where_shipped">Where To Shipped</label>
+              <input type="text" id="where_shipped" name="where_shipped" placeholder="Destination">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label for="verified_by">Verified By</label>
+              <input type="text" id="verified_by" name="verified_by" readonly>
+            </div>
+            <div class="field-group">
+              <label for="form_date">Date</label>
+              <input type="date" id="form_date" name="form_date" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE 2: FINAL ASSEMBLY CHECKLIST -->
+      <div class="form-card">
+        <div class="card-header">Page 2 &mdash; Final Assembly Checklist (68 Items)</div>
+        <div id="checklistContainer"></div>
+      </div>
+
+      <!-- FORM ACTIONS -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-back" id="newFormBtn">+ New Form</button>
+        <button type="button" class="btn btn-save" id="saveDraftBtn">&#128190; Save Draft</button>
+        <button type="button" class="btn btn-submit" id="submitBtn">&#10003; Submit for Approval</button>
+        <button type="button" class="btn btn-resubmit" id="editResubmitBtn" style="display:none">&#8635; Edit &amp; Resubmit</button>
+      </div>
+
+    </form>
+    </div><!-- end formEditor -->
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="/js/technician.js"></script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vajra - Login</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="login-page">
+    <!-- SF HAWK Branding -->
+    <div class="brand-header">
+      <img src="/sfHawk_Logo.png" alt="SF HAWK" class="brand-logo" style="height:48px;width:auto;">
+    </div>
+
+    <div class="login-card">
+      <div class="login-logo">VAJRA</div>
+      <div class="login-subtitle">Testing &amp; Quality Assurance System</div>
+      <h2>Sign In</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" placeholder="Enter username" autocomplete="username" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Enter password" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn-primary" id="loginBtn">Sign In</button>
+        <div class="error-msg" id="errorMsg"></div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('loginBtn');
+      const errEl = document.getElementById('errorMsg');
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
+      errEl.textContent = '';
+
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          errEl.textContent = data.error || 'Login failed';
+          btn.disabled = false;
+          btn.textContent = 'Sign In';
+          return;
+        }
+        if (data.user.role === 'head_office') {
+          window.location.href = '/head-office.html';
+        } else {
+          window.location.href = '/technician.html';
+        }
+      } catch (err) {
+        errEl.textContent = 'Network error. Please try again.';
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
+      }
+    });
+  </script>
+</body>
+</html>
