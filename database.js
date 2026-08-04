@@ -81,10 +81,11 @@ async function initializeDB() {
   const count = db.exec('SELECT COUNT(*) as cnt FROM users');
   const cnt = count[0] && count[0].values[0][0];
   if (!cnt || cnt === 0) {
+    // Default users - CHANGE PASSWORDS AFTER FIRST LOGIN!
     db.run('INSERT INTO users (username, password, role, name, email) VALUES (?,?,?,?,?)',
-      ['tech1', hashPassword('tech123'), 'technician', 'Technician One', 'technician@vajra.com']);
+      ['tech1', hashPassword('VajraTech@2024'), 'technician', 'Technician One', 'technician@vajra.com']);
     db.run('INSERT INTO users (username, password, role, name, email) VALUES (?,?,?,?,?)',
-      ['head1', hashPassword('head123'), 'head_office', 'Head Office Admin', 'headoffice@vajra.com']);
+      ['head1', hashPassword('VajraHead@2024'), 'head_office', 'Head Office Admin', 'headoffice@vajra.com']);
     saveDB();
     console.log('Seed users created.');
   }
