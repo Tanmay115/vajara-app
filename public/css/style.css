@@ -830,3 +830,25 @@ body {
   gap: 6px;
 }
 .btn-download-pdf:hover { background: #d32f2f; color: white; }
+
+
+/* ===== HEAD OFFICE EDIT MODE ===== */
+.editable-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid #ff9800;
+  border-radius: 5px;
+  font-size: 0.88rem;
+  background: #fff3cd;
+  color: #000;
+  transition: all 0.2s;
+}
+.editable-input:focus {
+  outline: none;
+  border-color: #f57c00;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+}
+.editable-input:hover {
+  border-color: #f57c00;
+}

@@ -516,8 +516,9 @@ async function viewForm(id) {
       <div class="card-body">${auditHtml}</div>
     </div>`;
 
-    // PDF download button
-    html += `<div style="text-align:right;margin:16px 0;">
+    // PDF download and Edit buttons
+    html += `<div style="display:flex;justify-content:space-between;align-items:center;margin:16px 0;">
+      <button class="btn btn-back" onclick="toggleEditMode(${id})" id="editModeBtn" style="background:#ff9800;border-color:#ff9800;color:white;">✎ Edit Form</button>
       <button class="btn btn-save" onclick="downloadPDF(${id},'${form.vajra_id||'form'}')" style="background:#d32f2f;border-color:#d32f2f;">⬇ Download PDF</button>
     </div>`;
 
@@ -676,3 +677,136 @@ document.getElementById('logoutBtn')?.addEventListener('click', async () => {
 });
 
 document.getElementById('refreshBtn')?.addEventListener('click', loadFormsList);
+
+
+// ===== EDIT MODE FOR HEAD OFFICE =====
+let isEditMode = false;
+let currentFormId = null;
+let originalFormData = null;
+
+function toggleEditMode(formId) {
+  isEditMode = !isEditMode;
+  currentFormId = formId;
+  const btn = document.getElementById('editModeBtn');
+  
+  if (isEditMode) {
+    // Enable edit mode
+    btn.textContent = '💾 Save Changes';
+    btn.style.background = '#27ae60';
+    btn.style.borderColor = '#27ae60';
+    btn.onclick = () => saveFormChanges(formId);
+    makeFieldsEditable();
+    showToast('Edit mode enabled! You can now modify form fields.', 'info');
+  } else {
+    // Cancel edit mode
+    btn.textContent = '✎ Edit Form';
+    btn.style.background = '#ff9800';
+    btn.style.borderColor = '#ff9800';
+    btn.onclick = () => toggleEditMode(formId);
+    viewForm(formId); // Reload form to reset
+  }
+}
+
+function makeFieldsEditable() {
+  // Convert readonly divs to input fields
+  document.querySelectorAll('.readonly-field').forEach(el => {
+    const value = el.textContent.trim();
+    if (value === '-') return; // Skip empty fields
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = value;
+    input.className = 'editable-input';
+    input.style.cssText = 'width:100%;padding:8px;border:2px solid #ff9800;border-radius:4px;font-size:0.88rem;background:#fff3cd;';
+    el.replaceWith(input);
+  });
+  
+  // Make checklist editable
+  document.querySelectorAll('.checklist-table tbody tr').forEach((row, idx) => {
+    const statusCell = row.cells[2]; // Status column
+    const commentCell = row.cells[3]; // Comment column
+    
+    // Convert status badges to select
+    const currentStatus = statusCell.textContent.trim().toLowerCase();
+    const select = document.createElement('select');
+    select.style.cssText = 'width:100%;padding:4px;border:2px solid #ff9800;background:#fff3cd;';
+    select.innerHTML = `
+      <option value="">-</option>
+      <option value="yes" ${currentStatus === 'yes' ? 'selected' : ''}>YES</option>
+      <option value="no" ${currentStatus === 'no' ? 'selected' : ''}>NO</option>
+    `;
+    statusCell.innerHTML = '';
+    statusCell.appendChild(select);
+    
+    // Convert comment to textarea
+    const currentComment = commentCell.textContent.trim();
+    const textarea = document.createElement('input');
+    textarea.type = 'text';
+    textarea.value = currentComment;
+    textarea.style.cssText = 'width:100%;padding:4px;border:1px solid #ddd;font-size:0.82rem;';
+    commentCell.innerHTML = '';
+    commentCell.appendChild(textarea);
+  });
+  
+  showToast('✏️ All fields are now editable!', 'info');
+}
+
+async function saveFormChanges(formId) {
+  if (!confirm('Save all changes to this form?')) return;
+  
+  try {
+    // Collect all changed data
+    const formData = {};
+    
+    // Collect editable inputs
+    document.querySelectorAll('.editable-input').forEach((input, idx) => {
+      const label = input.parentElement.previousElementSibling?.textContent || '';
+      const key = label.toLowerCase().replace(/[^a-z0-9]/g, '_');
+      formData[key] = input.value;
+    });
+    
+    // Collect checklist changes
+    const checklistRows = document.querySelectorAll('.checklist-table tbody tr');
+    checklistRows.forEach((row, idx) => {
+      const itemNum = row.cells[0].textContent.trim();
+      const statusSelect = row.cells[2].querySelector('select');
+      const commentInput = row.cells[3].querySelector('input');
+      
+      if (statusSelect) {
+        formData[`cl_${itemNum}`] = statusSelect.value;
+      }
+      if (commentInput) {
+        formData[`cl_${itemNum}_comment`] = commentInput.value;
+      }
+    });
+    
+    // Send update to server
+    const res = await fetch(`/api/forms/${formId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ form_data: formData })
+    });
+    
+    if (!res.ok) throw new Error('Failed to save changes');
+    
+    showToast('✅ Form updated successfully!', 'success');
+    
+    // Log the edit in audit trail
+    await fetch(`/api/forms/${formId}/audit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        action: 'edited_by_head_office',
+        detail: 'Form data modified by Head Office'
+      })
+    });
+    
+    // Reload form to show changes
+    setTimeout(() => {
+      isEditMode = false;
+      viewForm(formId);
+    }, 1500);
+    
+  } catch (err) {
+    showToast('❌ Error saving changes: ' + err.message, 'error');
+  }
+}
