@@ -24,7 +24,7 @@ function auditLog(form_id, user, action, detail = '') {
 
 // POST /api/forms - create or update
 router.post('/', requireAuth, (req, res) => {
-  const { id, vajra_id, vajra_base_id, status, form_data } = req.body;
+  const { id, vajra_id, vajra_base_id, vajra_type, status, form_data } = req.body;
   const techId = req.session.user.id;
   const now = new Date().toISOString();
 
@@ -44,12 +44,12 @@ router.post('/', requireAuth, (req, res) => {
       const finalStatus = isResubmit ? 'resubmitted' : (status || 'draft');
 
       dbRun(
-        `UPDATE forms SET vajra_id=?, vajra_base_id=?, status=?, form_data=?, updated_at=?,
+        `UPDATE forms SET vajra_id=?, vajra_base_id=?, vajra_type=?, status=?, form_data=?, updated_at=?,
          head_office_comments=CASE WHEN ? THEN '' ELSE head_office_comments END,
          reviewed_at=CASE WHEN ? THEN NULL ELSE reviewed_at END,
          reviewed_by=CASE WHEN ? THEN NULL ELSE reviewed_by END
          WHERE id=?`,
-        [vajra_id || '', vajra_base_id || '', finalStatus, JSON.stringify(form_data), now,
+        [vajra_id || '', vajra_base_id || '', vajra_type || 'standard', finalStatus, JSON.stringify(form_data), now,
          isResubmit, isResubmit, isResubmit, id]
       );
 
@@ -66,8 +66,8 @@ router.post('/', requireAuth, (req, res) => {
       return res.json({ success: true, id });
     } else {
       const result = dbRun(
-        'INSERT INTO forms (vajra_id, vajra_base_id, technician_id, status, form_data, created_at, updated_at) VALUES (?,?,?,?,?,?,?)',
-        [vajra_id || '', vajra_base_id || '', techId, status || 'draft', JSON.stringify(form_data), now, now]
+        'INSERT INTO forms (vajra_id, vajra_base_id, vajra_type, technician_id, status, form_data, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?)',
+        [vajra_id || '', vajra_base_id || '', vajra_type || 'standard', techId, status || 'draft', JSON.stringify(form_data), now, now]
       );
       const newId = result.lastInsertRowid;
 

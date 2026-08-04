@@ -42,6 +42,7 @@ async function initializeDB() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       vajra_id TEXT,
       vajra_base_id TEXT,
+      vajra_type TEXT DEFAULT 'standard',
       technician_id INTEGER,
       status TEXT DEFAULT 'draft',
       form_data TEXT,

@@ -156,10 +156,13 @@ function renderFormsList(forms) {
   }
   let html = '';
   forms.forEach(f => {
+    const typeBadge = f.vajra_type === 'higher' 
+      ? '<span class="badge" style="background:#9b59b6;color:white;">⚡ HIGHER</span>' 
+      : '<span class="badge" style="background:#3498db;color:white;">📦 STANDARD</span>';
     html += `
       <div class="form-list-item ${f.status}" onclick="viewForm(${f.id})">
         <div class="form-list-info">
-          <h3>Vajra ID: ${f.vajra_id || '(No ID)'} &nbsp;•&nbsp; ${f.vajra_base_id || ''}</h3>
+          <h3>Vajra ID: ${f.vajra_id || '(No ID)'} &nbsp;•&nbsp; ${f.vajra_base_id || ''} &nbsp; ${typeBadge}</h3>
           <div class="form-list-meta">
             Technician: <strong>${f.technician_name || '-'}</strong> &nbsp;•&nbsp;
             Updated: ${formatDate(f.updated_at)} &nbsp;•&nbsp; Form #${f.id}

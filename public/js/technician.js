@@ -84,6 +84,7 @@ const CHECKLIST_ITEMS = [
 
 let currentUser = null;
 let currentFormId = null;
+let currentFormType = 'standard'; // Default to standard
 
 // Toast notification
 function showToast(message, type = 'success') {
@@ -204,7 +205,7 @@ async function saveForm(status) {
   const vajra_id = document.getElementById('vajra_id').value.trim();
   const vajra_base_id = document.getElementById('vajra_base_id').value.trim();
   const form_data = collectFormData();
-  const payload = { id: currentFormId, vajra_id, vajra_base_id, status, form_data };
+  const payload = { id: currentFormId, vajra_id, vajra_base_id, vajra_type: currentFormType, status, form_data };
 
   try {
     const res = await fetch('/api/forms', {
@@ -341,6 +342,11 @@ async function loadForm(id) {
     const res = await fetch(`/api/forms/${id}`);
     if (!res.ok) return;
     const form = await res.json();
+    
+    // Set form type
+    currentFormType = form.vajra_type || 'standard';
+    updateFormTitle(currentFormType);
+    
     if (form.form_data) restoreFormData(form.form_data);
     document.getElementById('vajra_id').value = form.vajra_id || '';
     document.getElementById('vajra_base_id').value = form.vajra_base_id || '';
@@ -770,4 +776,57 @@ document.getElementById('editResubmitBtn')?.addEventListener('click', async () =
     btn.disabled = false;
     btn.textContent = 'Edit & Resubmit';
   }
+});
+
+
+// ===== FORM TYPE SELECTION =====
+function showFormTypeModal() {
+  document.getElementById('formTypeModal').style.display = 'flex';
+}
+
+function closeFormTypeModal() {
+  document.getElementById('formTypeModal').style.display = 'none';
+}
+
+function selectVajraType(type) {
+  currentFormType = type;
+  closeFormTypeModal();
+  
+  // Clear form and start fresh
+  currentFormId = null;
+  document.getElementById('techForm').reset();
+  document.getElementById('formEditor').style.display = 'block';
+  document.getElementById('myFormsDashboard').style.display = 'none';
+  document.getElementById('statusBanner').style.display = 'none';
+  
+  // Show message based on type
+  const typeName = type === 'standard' ? 'Standard Vajra' : 'Higher Version Vajra';
+  showToast(`📋 Creating new ${typeName} form`, 'success');
+  
+  // Update form title to show type
+  updateFormTitle(type);
+}
+
+function updateFormTitle(type) {
+  const typeBadge = type === 'higher' 
+    ? '<span style="background:#9b59b6;color:white;padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:700;margin-left:10px;">⚡ HIGHER VERSION</span>'
+    : '<span style="background:#3498db;color:white;padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:700;margin-left:10px;">📦 STANDARD</span>';
+  
+  const titleElement = document.querySelector('.logo');
+  if (titleElement) {
+    titleElement.innerHTML = `<span>VAJRA</span> Testing Job Card ${typeBadge}`;
+  }
+}
+
+// Update New Form button handlers to show modal
+document.getElementById('newFormBtn')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  if (currentFormId || confirm('Start a new form? Unsaved changes will be lost.')) {
+    showFormTypeModal();
+  }
+});
+
+document.getElementById('newFormBtnDash')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  showFormTypeModal();
 });
