@@ -499,9 +499,7 @@ function showFormEditor() {
 }
 
 document.getElementById('myFormsBtn')?.addEventListener('click', showDashboard);
-document.getElementById('newFormBtnDash')?.addEventListener('click', () => {
-  window.location.href = '/technician.html';
-});
+// Removed old newFormBtnDash handler - now using modal version at end of file
 
 // ===== FILE UPLOAD HANDLING =====
 
@@ -746,11 +744,7 @@ function showPDFButton() {
   }
 }
 
-document.getElementById('newFormBtn')?.addEventListener('click', () => {
-  if (confirm('Start a new form? Unsaved changes will be lost.')) {
-    window.location.href = '/technician.html';
-  }
-});
+// Removed old newFormBtn handler - now using modal version at end of file
 
 document.getElementById('editResubmitBtn')?.addEventListener('click', async () => {
   if (!document.getElementById('vajra_id').value.trim()) {
