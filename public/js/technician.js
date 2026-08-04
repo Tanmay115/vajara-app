@@ -812,15 +812,17 @@ function updateFormTitle(type) {
   }
 }
 
-// Update New Form button handlers to show modal
-document.getElementById('newFormBtn')?.addEventListener('click', (e) => {
-  e.preventDefault();
-  if (currentFormId || confirm('Start a new form? Unsaved changes will be lost.')) {
-    showFormTypeModal();
-  }
-});
+// Setup New Form button handlers after page loads
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('newFormBtn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (!currentFormId || confirm('Start a new form? Unsaved changes will be lost.')) {
+      showFormTypeModal();
+    }
+  });
 
-document.getElementById('newFormBtnDash')?.addEventListener('click', (e) => {
-  e.preventDefault();
-  showFormTypeModal();
+  document.getElementById('newFormBtnDash')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    showFormTypeModal();
+  });
 });
